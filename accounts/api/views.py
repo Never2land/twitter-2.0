@@ -3,7 +3,7 @@ from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from accounts.api.serializers import (
-    UserSerializer, 
+    UserSerializer,
     LoginSerializer,
     SignupSerializer,
 )
@@ -21,6 +21,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
+
 
 class AccountViewSet(viewsets.ViewSet):
     serializer_class = SignupSerializer
@@ -48,7 +49,7 @@ class AccountViewSet(viewsets.ViewSet):
                 'message': 'Please check input',
                 'errors': serializer.errors,
             }, status=400)
-        
+
         # validation ok, login
         username = serializer.validated_data['username']
         password = serializer.validated_data['password']
@@ -80,7 +81,7 @@ class AccountViewSet(viewsets.ViewSet):
                 'message': 'Please check input.',
                 'errors': serializer.errors,
             }, status=400)
-        
+
         user = serializer.save()
         django_login(request, user)
         return Response({
