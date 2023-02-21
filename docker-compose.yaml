@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: db
+    volumes:
+      - ./data/db:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=twitter
+      - MYSQL_USER=mysql
+      - MYSQL_PASSWORD=mysql
+  backend:
+    build: .
+    container_name: backend
+    volumes:
+      - .:/code
+    entrypoint: ["/code/wait-for-it.sh", "db:3306", "--"]
+    command: sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:9091"
+    restart: always
+    ports:
+      - "9091:9091"
+    environment:
+      - MYSQL_NAME=twitter
+      - MYSQL_USER=mysql
+      - MYSQL_PASSWORD=mysql
+      - MYSQL_HOST=db
+    depends_on:
+      - db
+    links:
+      - db
