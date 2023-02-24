@@ -2,12 +2,12 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
-from friendships.models import Friendships
+from friendships.models import Friendship
 from friendships.api.serializers import (
     FollowerSerializer,
     FollowingSerializer,
     FriendshipSerializerForCreate,
-)
+)  
 from accounts.api.serializers import UserSerializerForFriendship
 from django.contrib.auth.models import User
 
@@ -20,7 +20,7 @@ class FriendshipViewSet(viewsets.GenericViewSet):
     def followers(self, request, pk):
         # pk is the user id
         # GET /api/friendships/{user_id}/followers/
-        friendships = Friendships.objects.filter(
+        friendships = Friendship.objects.filter(
             to_user_id=pk).order_by('-created_at')
         serializer = FollowerSerializer(friendships, many=True)
         return Response({
@@ -32,7 +32,7 @@ class FriendshipViewSet(viewsets.GenericViewSet):
     def followings(self, request, pk):
         # pk is the user id
         # GET /api/friendships/{user_id}/followings/
-        friendships = Friendships.objects.filter(
+        friendships = Friendship.objects.filter(
             from_user_id=pk).order_by('-created_at')
         serializer = FollowingSerializer(friendships, many=True)
         return Response({
@@ -79,7 +79,7 @@ class FriendshipViewSet(viewsets.GenericViewSet):
             }, status=status.HTTP_400_BAD_REQUEST)
         
         # Delete friendship
-        deleted, _ = Friendships.objects.filter(
+        deleted, _ = Friendship.objects.filter(
             from_user_id=request.user.id,
             to_user_id=pk,
         ).delete()

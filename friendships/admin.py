@@ -1,8 +1,8 @@
 from django.contrib import admin
-from friendships.models import Friendships
+from friendships.models import Friendship
 
 
-@admin.register(Friendships)
+@admin.register(Friendship)
 class FriendshipAdmin(admin.ModelAdmin):
     list_display = ('id', 'from_user', 'to_user', 'created_at')
     ordering = ('-created_at',)

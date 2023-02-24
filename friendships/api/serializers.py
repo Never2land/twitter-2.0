@@ -1,5 +1,5 @@
 from accounts.api.serializers import UserSerializerForFriendship
-from friendships.models import Friendships
+from friendships.models import Friendship
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth.models import User
@@ -9,7 +9,7 @@ class FollowerSerializer(serializers.ModelSerializer):
     user = UserSerializerForFriendship(source='from_user')
 
     class Meta:
-        model = Friendships
+        model = Friendship
         fields = ('user', 'created_at',)
 
 
@@ -17,7 +17,7 @@ class FollowingSerializer(serializers.ModelSerializer):
     user = UserSerializerForFriendship(source='to_user')
 
     class Meta:
-        model = Friendships
+        model = Friendship
         fields = ('user', 'created_at',)
 
 
@@ -26,7 +26,7 @@ class FriendshipSerializerForCreate(serializers.ModelSerializer):
     to_user_id = serializers.IntegerField(write_only=True)
 
     class Meta:
-        model = Friendships
+        model = Friendship
         fields = ('from_user_id', 'to_user_id', 'created_at',)
 
     def validate(self, data):
@@ -43,7 +43,7 @@ class FriendshipSerializerForCreate(serializers.ModelSerializer):
             })
 
         # Check if the friendship already exists
-        if Friendships.objects.filter(
+        if Friendship.objects.filter(
             from_user_id=data['from_user_id'],
             to_user_id=data['to_user_id'],
         ).exists():
@@ -53,7 +53,7 @@ class FriendshipSerializerForCreate(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        return Friendships.objects.create(
+        return Friendship.objects.create(
             from_user_id=validated_data['from_user_id'],
             to_user_id=validated_data['to_user_id'],
         )
