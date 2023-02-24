@@ -16,7 +16,7 @@ class TweetSerializerForCreate(serializers.ModelSerializer):
 
     class Meta:
         model = Tweet
-        # When there is only one field, it must be a tuple(need to add a comma 
+        # When there is only one field, it must be a tuple(need to add a comma
         # at the end).
         fields = ('content', )
 

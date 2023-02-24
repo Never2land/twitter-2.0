@@ -16,12 +16,12 @@ class TweetViewSet(viewsets.GenericViewSet):
     def list(self, request):
         if 'user_id' not in request.query_params:
             return Response({'error': 'user_id is required'}, status=400)
-        
+
         user_id = request.query_params['user_id']
         tweets = Tweet.objects.filter(user_id=user_id).order_by('-created_at')
         serializer = TweetSerializer(tweets, many=True)
         return Response({'tweets': serializer.data})
-    
+
     def create(self, request):
         serializer = TweetSerializerForCreate(
             data=request.data,

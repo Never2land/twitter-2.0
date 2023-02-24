@@ -21,4 +21,3 @@ class TweetTests(TestCase):
         tweet.created_at = utc_now() - timedelta(hours=10)
         tweet.save()
         self.assertEqual(tweet.hours_to_now, 10)
-        
