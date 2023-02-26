@@ -28,6 +28,7 @@ class TweetViewSet(viewsets.GenericViewSet):
         serializer = TweetSerializer(tweets, many=True)
         return Response({'tweets': serializer.data})
 
+
     def retrieve(self, request, *args, **kwargs):
         tweet = self.get_object()
         print("=================>tweet<============", tweet)

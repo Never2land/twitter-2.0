@@ -20,5 +20,4 @@ class TweetTests(TestCase):
         tweet = Tweet.objects.create(user=dandan, content='wo yao qu guge')
         tweet.created_at = utc_now() - timedelta(hours=10)
         tweet.save()
-        self.assertEqual(tweet.hours_to_now, 10)
-        
+        self.assertEqual(tweet.hours_to_now, 10)      
