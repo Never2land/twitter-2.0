@@ -1,10 +1,12 @@
 from rest_framework.test import APIClient
+
 from testing.testcases import TestCase
 from tweets.models import Tweet
 
 # Caution: has to add '/' at end to avoid 301 redirect
 TWEET_LIST_API = '/api/tweets/'
 TWEET_CREATE_API = '/api/tweets/'
+TWEET_RETRIEVE_API = '/api/tweets/{}/'
 
 
 class TweetApiTests(TestCase):
@@ -40,6 +42,25 @@ class TweetApiTests(TestCase):
         # Check order
         self.assertEqual(response.data['tweets'][0]['id'], self.tweets2[1].id)
         self.assertEqual(response.data['tweets'][1]['id'], self.tweets2[0].id)
+
+    def test_retrieve_api(self):
+        # tweet with id=-1 does not exist
+        response = self.anonymous_client.get(TWEET_RETRIEVE_API.format(-1))
+        self.assertEqual(response.status_code, 404)
+
+        # Retrive tweet with comments
+        tweet = self.create_tweet(self.user1)
+        url = TWEET_RETRIEVE_API.format(tweet.id)
+        response = self.anonymous_client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data['comments']), 0)
+
+        self.create_comment(self.user1, tweet, 'comment1')
+        self.create_comment(self.user2, tweet, 'comment2')
+        self.create_comment(
+            self.user2, self.create_tweet(self.user2), 'comment3')
+        response = self.anonymous_client.get(url)
+        self.assertEqual(len(response.data['comments']), 2)
 
     def test_create_api(self):
         # Not logged in
