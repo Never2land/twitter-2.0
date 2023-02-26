@@ -30,20 +30,25 @@ ALLOWED_HOSTS = ['127.0.0.1', '192.168.33.10', 'localhost']
 if DEBUG:
     import socket  # only if you haven't already imported this
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
-    INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
+    INTERNAL_IPS = [
+        ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    # Django default
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Third party packages
     'rest_framework',
     "debug_toolbar",
+    'django_filters',
 
     # Project apps
     'accounts',
@@ -56,6 +61,9 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ]
 }
 
 MIDDLEWARE = [
@@ -94,14 +102,14 @@ WSGI_APPLICATION = 'twitter.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    'default': 
+    'default':
     {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'twitter',
         'HOST': 'db',
         'PORT': '3306',
         'USER': 'mysql',
-        'PASSWORD': 'mysql', # 这⾥是⾃⼰下载mysql时候输⼊两次的那个密码
+        'PASSWORD': 'mysql',  # 这⾥是⾃⼰下载mysql时候输⼊两次的那个密码
     }
 }
 
@@ -143,3 +151,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Load local developing settings
+try:
+    from .local_settings import *
+except:
+    pass
