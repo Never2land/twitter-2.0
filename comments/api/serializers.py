@@ -1,13 +1,13 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from accounts.api.serializers import UserSerializer
+from accounts.api.serializers import UserSerializerForTweet
 from comments.models import Comment
 from tweets.models import Tweet
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    user = UserSerializer
+    user = UserSerializerForTweet()
 
     class Meta:
         model = Comment
@@ -36,3 +36,15 @@ class CommentSerializerForCreate(serializers.ModelSerializer):
             tweet_id=validated_data['tweet_id'],
             content=validated_data['content'],
         )
+
+
+class CommentSerializerForUpdate(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ('content',)
+
+    def update(self, instance, validated_data):
+        instance.content = validated_data['content']
+        instance.save()
+        # update function needs to return updated instance
+        return instance
