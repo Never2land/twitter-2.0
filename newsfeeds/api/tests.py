@@ -1,9 +1,9 @@
-from newsfeeds.models import NewsFeed
-from friendships.models import Friendship
 from rest_framework import status
 from rest_framework.test import APIClient
-from testing.testcases import TestCase
 
+from friendships.models import Friendship
+from newsfeeds.models import NewsFeed
+from testing.testcases import TestCase
 
 NEWSFEEDS_URL = '/api/newsfeeds/'
 POST_TWEET_URL = '/api/tweets/'
@@ -42,7 +42,8 @@ class NewsFeedApiTests(TestCase):
 
         # List tweet from following
         self.user1_client.post(FOLLOW_URL.format(self.user2.id))
-        response = self.user2_client.post(POST_TWEET_URL, {'content': 'Hello World!'})
+        response = self.user2_client.post(
+            POST_TWEET_URL, {'content': 'Hello World!'})
         expected_tweet_id = response.data['id']
         response = self.user1_client.get(NEWSFEEDS_URL)
         posted_tweet_id = response.data['newsfeeds'][0]['tweet']['id']
