@@ -9,11 +9,13 @@ from comments.api.serializers import (
     CommentSerializerForUpdate,
 )
 from comments.models import Comment
+from utils.decorators import required_params
 
 
 class CommentViewSet(viewsets.GenericViewSet):
     serializer_class = CommentSerializerForCreate
     queryset = Comment.objects.all()
+    filterset_fields = ('tweet_id', )
 
     def get_permissions(self):
         if self.action == 'create':
@@ -21,6 +23,16 @@ class CommentViewSet(viewsets.GenericViewSet):
         if self.action in ['update', 'destroy']:
             return [IsAuthenticated(), IsObjectOwner()]
         return [AllowAny()]
+
+    @required_params(params=['tweet_id'])
+    def list(self, request, *args, **kwargs):
+        queryset = self.queryset
+        comments = self.filter_queryset(queryset).prefetch_related(
+            'user').order_by('created_at')
+        serializer = CommentSerializer(comments, many=True)
+        return Response({
+            'comments': serializer.data
+        }, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
         data = {
