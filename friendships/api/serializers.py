@@ -1,8 +1,9 @@
-from accounts.api.serializers import UserSerializerForFriendship
-from friendships.models import Friendship
+from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from django.contrib.auth.models import User
+
+from accounts.api.serializers import UserSerializerForFriendship
+from friendships.models import Friendship
 
 
 class FollowerSerializer(serializers.ModelSerializer):
@@ -34,7 +35,7 @@ class FriendshipSerializerForCreate(serializers.ModelSerializer):
         if not User.objects.filter(id=data['to_user_id']).exists():
             raise ValidationError({
                 'message': 'User not found.'
-            }) 
+            })
 
         # Check if the user is trying to follow himself/herself
         if data['from_user_id'] == data['to_user_id']:

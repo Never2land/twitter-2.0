@@ -1,8 +1,8 @@
-from comments.models import Comment
 from django.utils import timezone
 from rest_framework.test import APIClient
-from testing.testcases import TestCase
 
+from comments.models import Comment
+from testing.testcases import TestCase
 
 COMMENT_URL = '/api/comments/'
 COMMENT_DETAIL_URL = '/api/comments/{}/'
