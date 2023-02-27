@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 
-def required_params(method='GET', params=None):
+def required_params(methods=None, params=None):
     '''
     When we use @required_params(params=['some_param']), it will return a
     decorator function. The params for decorator function is the params wrapped
@@ -13,6 +13,9 @@ def required_params(method='GET', params=None):
     if params is None:
         params = []
 
+    methods = ['get'] if methods is None else methods
+    methods = [method.lower() for method in methods]
+
     def decorator(view_func):
         '''
         decorator 函数通过 wraps 来将 func 里的参数解析出来传给 _wrapped_view
@@ -20,7 +23,7 @@ def required_params(method='GET', params=None):
         '''
         @wraps(view_func)
         def _wrapped_view(instance, request, *args, **kwargs):
-            if method == 'GET':
+            if 'get' in methods:
                 data = request.query_params
             else:
                 data = request.data
