@@ -4,8 +4,9 @@ from django.test import TestCase as DjangoTestCase
 from rest_framework.test import APIClient
 
 from comments.models import Comment
-from tweets.models import Tweet
 from likes.models import Like
+from newsfeeds.models import NewsFeed
+from tweets.models import Tweet
 
 
 class TestCase(DjangoTestCase):
@@ -41,4 +42,8 @@ class TestCase(DjangoTestCase):
             object_id=target.id,
             user=user,
         )
+        return instance
+
+    def create_newsfeed(self, user, tweet):
+        instance, _ = NewsFeed.objects.get_or_create(user=user, tweet=tweet)
         return instance
