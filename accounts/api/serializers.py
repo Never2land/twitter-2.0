@@ -8,13 +8,19 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id', 'username', 'email', 'password')
 
 
-class UserSerializerForTweet(serializers.ModelSerializer):
+class UserSerializerForTweet(UserSerializer):
     class Meta:
         model = User
         fields = ('id', 'username')
 
 
-class UserSerializerForFriendship(serializers.ModelSerializer):
+class UserSerializerForFriendship(UserSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username')
+
+
+class UserSerializerForLike(UserSerializer):
     class Meta:
         model = User
         fields = ('id', 'username')
