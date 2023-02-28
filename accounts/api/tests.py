@@ -1,3 +1,4 @@
+from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework.test import APIClient
 
 from accounts.models import UserProfile
@@ -7,6 +8,7 @@ LOGIN_URL = '/api/accounts/login/'
 LOGOUT_URL = '/api/accounts/logout/'
 SIGNUP_URL = '/api/accounts/signup/'
 LOGIN_STATUS_URL = '/api/accounts/login_status/'
+USER_PROFILE_DETAIL_URL = '/api/profiles/{}/'
 
 
 class AccountApiTests(TestCase):
@@ -47,7 +49,7 @@ class AccountApiTests(TestCase):
         })
         self.assertEqual(response.status_code, 200)
         self.assertNotEqual(response.data['user'], None)
-        self.assertEqual(response.data['user']['email'], 'admin@jiuzhang.com')
+        self.assertEqual(response.data['user']['id'], self.user.id)
         # 验证已经登录了
         response = self.client.get(LOGIN_STATUS_URL)
         self.assertEqual(response.data['has_logged_in'], True)
@@ -120,3 +122,47 @@ class AccountApiTests(TestCase):
         # 验证用户已经登入
         response = self.client.get(LOGIN_STATUS_URL)
         self.assertEqual(response.data['has_logged_in'], True)
+
+
+class UserProfileAPITests(TestCase):
+
+    def test_update(self):
+        user1 = self.create_user('user1')
+        user1_client = APIClient()
+        user1_client.force_authenticate(user1)
+        p = user1.profile
+        p.nickname = 'old nickname'
+        p.save()
+        url = USER_PROFILE_DETAIL_URL.format(p.id)
+
+        # Profile can only be updated by the owner
+        user2 = self.create_user('user2')
+        user2_client = APIClient()
+        user2_client.force_authenticate(user2)
+        response = user2_client.put(url, {
+            'nickname': 'new nickname',
+        })
+        self.assertEqual(response.status_code, 403)
+        p.refresh_from_db()
+        self.assertEqual(p.nickname, 'old nickname')
+
+        # Update nickname
+        response = user1_client.put(url, {
+            'nickname': 'new nickname',
+        })
+        self.assertEqual(response.status_code, 200)
+        p.refresh_from_db()
+        self.assertEqual(p.nickname, 'new nickname')
+
+        # Update avatar
+        response = user1_client.put(url, {
+            'avatar': SimpleUploadedFile(
+                name='test_avatar.png',
+                content=str.encode('fake image data'),
+                content_type='image/jpeg',
+
+            )})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual('test_avatar.png' in response.data['avatar'], True)
+        p.refresh_from_db()
+        self.assertEqual('test_avatar.png' in p.avatar.url, True)

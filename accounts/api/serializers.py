@@ -1,29 +1,45 @@
 from django.contrib.auth.models import User
-from rest_framework import serializers, exceptions
+from rest_framework import exceptions, serializers
+
+from accounts.models import UserProfile
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'password')
+        fields = ('id', 'username')
+
+
+class UserSerializerWithProfile(UserSerializer):
+    # user.profile.nickname
+    nickname = serializers.CharField(source='profile.nickname')
+    avatar_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ('id', 'username')
+
+    def get_avatar_url(self, obj):
+        if obj.profile.avatar:
+            return obj.profile.avatar.url
+        else:
+            return None
 
 
 class UserSerializerForTweet(UserSerializer):
-    class Meta:
-        model = User
-        fields = ('id', 'username')
+    pass
 
 
 class UserSerializerForFriendship(UserSerializer):
-    class Meta:
-        model = User
-        fields = ('id', 'username')
+    pass
 
 
 class UserSerializerForLike(UserSerializer):
-    class Meta:
-        model = User
-        fields = ('id', 'username')
+    pass
+
+
+class UserSerializerForTweet(UserSerializer):
+    pass
 
 
 class LoginSerializer(serializers.Serializer):
@@ -68,3 +84,9 @@ class SignupSerializer(serializers.ModelSerializer):
         # Create UserProfile object
         user.profile
         return user
+
+
+class UserProfileSerializerForUpdate(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ('nickname', 'avatar')
