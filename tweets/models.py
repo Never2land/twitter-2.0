@@ -3,6 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 from likes.models import Like
+from tweets.constants import TWEET_PHOTO_STATUS_CHOICES, TweetPhotoStatus
 from utils.time_helpers import utc_now
 
 
@@ -28,3 +29,39 @@ class Tweet(models.Model):
 
     def __str__(self):
         return f'{self.user} says {self.content} at {self.created_at}'
+
+
+class TweetPhoto(models.Model):
+    # Define foreign key to Tweet
+    tweet = models.ForeignKey(Tweet, on_delete=models.SET_NULL, null=True)
+
+    # Who posted this photo. Although we can get this information from tweet,
+    # but redundancy is good for performance imporvement and data integrity
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+
+    # Photo file
+    file = models.FileField()
+    order = models.IntegerField(default=0)
+
+    # Photo status
+    # using integer field to make it easier for future updates
+    status = models.IntegerField(
+        default=TweetPhotoStatus.PENDING,
+        choices=TWEET_PHOTO_STATUS_CHOICES,
+    )
+
+    # Soft delete for photos
+    has_deleted = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        index_together = (
+            ('user', 'created_at'),
+            ('has_deleted', 'created_at'),
+            ('status', 'created_at'),
+            ('tweet', 'order'),
+        )
+
+    def __str__(self):
+        return f'{self.tweet_id}: {self.file}'
