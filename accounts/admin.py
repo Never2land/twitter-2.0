@@ -24,7 +24,7 @@ class UserProfileInline(admin.StackedInline):
 
 
 class UserAdmin(BaseUserAdmin):
-    list_display = ('username', 'email', 'is_staff', 'date_joined')
+    list_display = ('id', 'username', 'email', 'is_staff', 'date_joined')
     date_hierarchy = 'date_joined'
     inlines = (UserProfileInline, )
 
