@@ -48,7 +48,7 @@ INSTALLED_APPS = [
 
     # Third party packages
     'rest_framework',
-    "debug_toolbar",
+    # "debug_toolbar",
     'django_filters',
     'notifications',
 
@@ -78,7 +78,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
+    # "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = 'twitter.urls'
@@ -172,6 +172,22 @@ AWS_STORAGE_BUCKET_NAME = 'twitter-2.0'
 AWS_S3_REGION_NAME = 'us-west-1'
 
 MEDIA_ROOT = '/media/'
+
+
+# https://docs.djangoproject.com/en/3.1/topics/cache/
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': 'cache:11311',
+        'TIMEOUT': 86400,
+    },
+    'testing': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': 'cache:11311',
+        'TIMEOUT': 86400,
+        'KEY_PREFIX': 'testing_',
+    }
+}
 
 
 # Load local developing settings
