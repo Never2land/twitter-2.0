@@ -31,5 +31,13 @@ services:
       - MYSQL_HOST=db
     depends_on:
       - db
+      - cache
     links:
       - db
+  cache:
+    image: memcached
+    ports:
+      - "11311:11311"
+    entrypoint:
+      - memcached
+      - -m 64
