@@ -162,7 +162,7 @@ STATIC_URL = '/static/'
 
 # Media files
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-TESTING = (("".join(sys.argv)).find('manage.py test') != -1)
+TESTING = ((" ".join(sys.argv)).find('manage.py test') != -1)
 if TESTING:
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
@@ -189,6 +189,11 @@ CACHES = {
     }
 }
 
+# Redis
+REDIS_HOST = 'redis'
+REDIS_PORT = 6379
+REDIS_DB = 0 if TESTING else 1
+REDIS_KEY_EXPIRE_TIME = 7 * 86400  # 7 days
 
 # Load local developing settings
 try:
