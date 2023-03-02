@@ -17,6 +17,9 @@ class Comment(models.Model):
         index_together = (('tweet', 'created_at'), )
         ordering = ('-created_at', )
 
+    def __str__(self):
+        return f'{self.created_at} {self.user} comments {self.tweet}: {self.content}'
+
     @property
     def like_set(self):
         return Like.objects.filter(
@@ -24,5 +27,7 @@ class Comment(models.Model):
             object_id=self.id,
         ).order_by('-created_at')
 
-    def __str__(self):
-        return f'{self.created_at} {self.user} comments {self.tweet}: {self.content}'
+    @property
+    def cached_user(self):
+        from accounts.services import UserService
+        return UserService.get_user_through_cache(self.user_id)
