@@ -17,7 +17,7 @@ class UserSerializerWithProfile(UserSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'username')
+        fields = ('id', 'username', 'nickname', 'avatar_url')
 
     def get_avatar_url(self, obj):
         if obj.profile.avatar:
@@ -26,19 +26,19 @@ class UserSerializerWithProfile(UserSerializer):
             return None
 
 
-class UserSerializerForTweet(UserSerializer):
+class UserSerializerForTweet(UserSerializerWithProfile):
     pass
 
 
-class UserSerializerForFriendship(UserSerializer):
+class UserSerializerForComment(UserSerializerWithProfile):
     pass
 
 
-class UserSerializerForLike(UserSerializer):
+class UserSerializerForFriendship(UserSerializerWithProfile):
     pass
 
 
-class UserSerializerForTweet(UserSerializer):
+class UserSerializerForLike(UserSerializerWithProfile):
     pass
 
 

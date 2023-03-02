@@ -26,3 +26,8 @@ class Like(models.Model):
             self.object_id,
             self.created_at,
         )
+
+    @property
+    def cached_user(self):
+        from accounts.services import UserService
+        return UserService.get_user_through_cache(self.user_id)
