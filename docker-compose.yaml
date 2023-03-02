@@ -19,7 +19,7 @@ services:
     container_name: backend
     volumes:
       - .:/code
-    entrypoint: ["/code/wait-for-it.sh", "db:3306", "--"]
+    entrypoint: [ "/code/wait-for-it.sh", "db:3306", "--" ]
     command: sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:9091"
     restart: always
     ports:
@@ -32,6 +32,7 @@ services:
     depends_on:
       - db
       - cache
+      - redis
     links:
       - db
   cache:
@@ -41,3 +42,11 @@ services:
     entrypoint:
       - memcached
       - -m 64
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning
+    volumes:
+      - ./redis-data:/data
