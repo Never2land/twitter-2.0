@@ -4,6 +4,7 @@ from django.db.models.signals import post_save, pre_delete
 
 from accounts.services import UserService
 from friendships.listeners import invalidate_following_cache
+from utils.memcached_helper import MemchachedHelper
 
 
 class Friendship(models.Model):
@@ -35,11 +36,11 @@ class Friendship(models.Model):
 
     @property
     def cached_from_user(self):
-        return UserService.get_user_through_cache(self.from_user_id)
+        return MemchachedHelper.get_object_through_cache(User, self.from_user_id)
 
     @property
     def cached_to_user(self):
-        return UserService.get_user_through_cache(self.to_user_id)
+        return MemchachedHelper.get_object_through_cache(User, self.to_user_id)
 
 
 # Hook up with listeners to invalidate cache
